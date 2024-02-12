@@ -65,8 +65,13 @@ const SignUp = () => {
           }
         );
 
-        console.log(response.data);
+        // console.log(response.data);
         alert("Form submitted successfully!", formData);
+        setFormData({
+          username: "",
+          email: "",
+          password: "",
+        });
         navigate("/signin");
       } catch (error) {
         console.error("Error during axios request:", error);

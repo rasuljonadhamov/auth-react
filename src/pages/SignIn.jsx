@@ -60,9 +60,13 @@ function SignIn() {
           formData
         );
         setUser(response.data);
+        setFormData({
+          login: "",
+          password: "",
+        });
         const accessToken = response.data.accessToken;
         Cookies.set("accessToken", accessToken, { expires: 7 });
-        console.log(accessToken);
+        // console.log(accessToken);
       } catch (error) {
         console.error("Error during axios request:", error);
         alert("Form submission failed.");
