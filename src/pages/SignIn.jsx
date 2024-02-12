@@ -1,8 +1,11 @@
 import { useState } from "react";
 import Input from "../components/Input";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 function SignIn() {
+  const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
     login: "",
     password: "",
@@ -14,19 +17,20 @@ function SignIn() {
   });
 
   const validateForm = () => {
+    console.log(formData);
     let isValid = true;
     const newErrors = { ...errors };
 
     if (formData.login.length < 5) {
-      newErrors.login = "Login is required. It should be at least 6 character";
+      newErrors.login = "Login is required. It should be at least 6 characters";
       isValid = false;
     } else {
       newErrors.login = "";
     }
 
-    if (!formData.password.length < 5 && formData.password == formData.login) {
+    if (!formData.password.length < 5 && formData.password === formData.login) {
       newErrors.password =
-        "Password is required. It should be at least 6 character";
+        "Password is required. It should be at least 6 characters";
       isValid = false;
     } else {
       newErrors.password = "";
@@ -41,32 +45,26 @@ function SignIn() {
 
     if (validateForm()) {
       try {
-        const res = await fetch(
-          "https://auth-69.onrender.com/api/auth/signin",
+        const response = await axios.post(
+          "https://auth-rg69.onrender.com/api/auth/signin",
           {
-            method: "POST",
-            headers: {
-              "Content-Type": "SignUplication/json",
-            },
-            body: JSON.stringify({
-              username: formData.login,
-              email: formData.password,
-              password: formData.password,
-            }),
+            username: formData.login,
+            email: formData.password,
+            password: formData.password,
           }
         );
 
-        console.log(res);
-
-        if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
-        }
-
-        const data = await res.json();
-        console.log(data);
-        alert("Form submitted successfully!", formData);
+        console.log(response.data);
+        alert(
+          "Form submitted successfully!, your access token saved to your cookies",
+          formData
+        );
+        setUser(response.data);
+        const accessToken = response.data.accessToken;
+        Cookies.set("accessToken", accessToken, { expires: 7 });
+        console.log(accessToken);
       } catch (error) {
-        console.error("Error during fetch:", error);
+        console.error("Error during axios request:", error);
         alert("Form submission failed.");
       }
     } else {
@@ -85,16 +83,29 @@ function SignIn() {
     <div className="flex justify-between items-center p-[46px] ">
       <div className="flex flex-col items-center justify-center">
         <img
-          src="/public/logo.png"
+          src="/logo.png"
           alt="Logo"
           className="mb-24 "
           height={"45px"}
           width={"125px"}
         />
-        <h1 className="text-5xl mb-3 font-bold">Xush kelibsiz!</h1>
-        <p className="mb-11">
-          Login parolingizni kiritib o‘z kabinetingizga kiring.
-        </p>
+        <h1 className="text-5xl mb-3 font-bold">
+          Xush kelibsiz!
+          {user && (
+            <div>
+              <h1 className="text-xl mt-4 mb-3 font-bold">
+                Welcome, {user.username}!
+              </h1>
+            </div>
+          )}
+        </h1>
+
+        {!user && (
+          <p className="mb-11">
+            {" "}
+            Login parolingizni kiritib oz kabinetingizga kiring.{" "}
+          </p>
+        )}
 
         <form className="w-full" onSubmit={handleSubmit}>
           <Input

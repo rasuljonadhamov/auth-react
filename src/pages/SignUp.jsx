@@ -1,8 +1,10 @@
 import { useState } from "react";
 import Input from "../components/Input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const SignUp = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -21,18 +23,25 @@ const SignUp = () => {
 
     if (formData.username.length < 5) {
       newErrors.username =
-        "username is required. It should be at least 6 character";
+        "Username is required. It should be at least 6 characters";
       isValid = false;
     } else {
       newErrors.username = "";
     }
 
+    if (formData.email.length < 5) {
+      newErrors.email = "Email is required. It should be at least 6 characters";
+      isValid = false;
+    } else {
+      newErrors.email = "";
+    }
+
     if (
       !formData.password.length < 5 &&
-      formData.password == formData.username
+      formData.password === formData.username
     ) {
       newErrors.password =
-        "Password is required. It should be at least 6 character";
+        "Password is required. It should be at least 6 characters";
       isValid = false;
     } else {
       newErrors.password = "";
@@ -47,32 +56,20 @@ const SignUp = () => {
 
     if (validateForm()) {
       try {
-        const res = await fetch(
-          "https://auth-69.onrender.com/api/auth/signup",
+        const response = await axios.post(
+          "https://auth-rg69.onrender.com/api/auth/signup",
           {
-            method: "POST",
-            headers: {
-              "Content-Type": "SignUplication/json",
-            },
-            body: JSON.stringify({
-              username: formData.username,
-              email: formData.email,
-              password: formData.password,
-            }),
+            username: formData.username,
+            email: formData.email,
+            password: formData.password,
           }
         );
 
-        console.log(res);
-
-        if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
-        }
-
-        const data = await res.json();
-        console.log(data);
+        console.log(response.data);
         alert("Form submitted successfully!", formData);
+        navigate("/signin");
       } catch (error) {
-        console.error("Error during fetch:", error);
+        console.error("Error during axios request:", error);
         alert("Form submission failed.");
       }
     } else {
@@ -91,7 +88,7 @@ const SignUp = () => {
     <div className="flex justify-between items-center p-[46px] ">
       <div className="flex flex-col items-center justify-center">
         <img
-          src="/public/logo.png"
+          src="/logo.png"
           alt="Logo"
           className="mb-24 "
           height={"45px"}

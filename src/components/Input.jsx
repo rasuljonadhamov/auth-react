@@ -12,7 +12,7 @@ const Input = ({ label, type, placeHolder, name, value, onChange, error }) => {
           error ? "border-red-500" : "border-gray-300"
         }`}
       />
-      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+      {error && <p className="mt-1 text-sm text-red-500 italic">{error}</p>}
     </div>
   );
 };
