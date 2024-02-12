@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Input from "../components/Input";
+import { Link } from "react-router-dom";
 
 function SignIn() {
   const [formData, setFormData] = useState({
@@ -41,7 +42,7 @@ function SignIn() {
     if (validateForm()) {
       try {
         const res = await fetch(
-          "https://auth-69.onrender.com/api/auth/signup",
+          "https://auth-69.onrender.com/api/auth/signin",
           {
             method: "POST",
             headers: {
@@ -120,6 +121,10 @@ function SignIn() {
           >
             Kirish
           </button>
+
+          <Link to={"/"} className="text-sky-500 mt-4 block text-center">
+            Do not You have an account, Go to SignUp
+          </Link>
         </form>
 
         <p className="mt-12 text-lg font-medium text-gray-500">
