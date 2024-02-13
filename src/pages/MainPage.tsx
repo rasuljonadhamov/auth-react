@@ -12,7 +12,7 @@ const MainPage = () => {
     price: "",
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [searchTerm, setSearchTerm] = useState("");
   const [newProduct, setNewProduct] = useState({
     name: "",
     description: "",
@@ -36,7 +36,7 @@ const MainPage = () => {
     };
 
     fetchProducts();
-  }, []);
+  }, [searchTerm]);
 
   const handleDelete = async (productId) => {
     const confirmDelete = window.confirm(
@@ -59,8 +59,7 @@ const MainPage = () => {
   };
 
   const handleAddProduct = async (e) => {
-    e.preventDefault(); // Add this line to prevent default form submission behavior
-
+    e.preventDefault();
     try {
       const response = await axios.post(
         "https://auth-rg69.onrender.com/api/products",
@@ -89,6 +88,28 @@ const MainPage = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+
+  const handleSearch = () => {
+    if (searchTerm.trim() === "") {
+      fetchProducts();
+    } else {
+      const filteredProducts = products.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setProducts(filteredProducts);
+    }
+  };
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(
+        "https://auth-rg69.onrender.com/api/products/all"
+      );
+      setProducts(response.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
   };
 
   return (
@@ -140,12 +161,30 @@ const MainPage = () => {
         </form>
       </Modal>
 
-      <button
-        onClick={openModal}
-        className="bg-blue-600 mt-8 ml-10 text-white px-4 py-2 rounded-md font-bold shadow hover:bg-blue-700"
-      >
-        Add New Product
-      </button>
+      <div className="flex justify-evenly items-center justify-center">
+        <button
+          onClick={openModal}
+          className="bg-blue-600  ml-10 text-white px-4 py-2 rounded-md font-bold shadow hover:bg-blue-700"
+        >
+          Add New Product
+        </button>
+
+        <div className="mb-4 mt-3 p-4">
+          <input
+            type="search"
+            placeholder="Search by name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="p-2 border rounded-md"
+          />
+          <button
+            onClick={handleSearch}
+            className="bg-blue-600 text-white px-4 py-2 ml-2 rounded-md font-bold shadow hover:bg-blue-700"
+          >
+            Search
+          </button>
+        </div>
+      </div>
 
       {products && <Products products={products} handleDelete={handleDelete} />}
     </div>
