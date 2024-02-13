@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Input from "../components/Input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -10,6 +10,7 @@ function SignIn() {
     login: "",
     password: "",
   });
+  const navigate = useNavigate();
 
   const [errors, setErrors] = useState({
     login: "",
@@ -66,7 +67,7 @@ function SignIn() {
         });
         const accessToken = response.data.accessToken;
         Cookies.set("accessToken", accessToken, { expires: 7 });
-        // console.log(accessToken);
+        navigate("/main", { state: { user: response.data } });
       } catch (error) {
         console.error("Error during axios request:", error);
         alert("Form submission failed.");
